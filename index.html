@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ff4f2e">
+<title>Le Choix du Pilote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@500;700;800;900&display=swap">
+<style>
+/* Layout : une grille de départ — questions à gauche, podium à droite ; une colonne sur téléphone. */
+:root{
+  --bg:#f3f6fb; --panel:#ffffff; --ink:#18213a; --muted:#5b6582; --line:#d9dfec;
+  --go:#ff4f2e; --go-ink:#ffffff; --lane:#1d7cf2; --sun:#ffc21a; --grass:#1fae6b;
+  --spd:#ff4f2e; --acc:#1fae6b; --wgt:#7b5cf0; --hdl:#1d7cf2;
+  --display:"Bungee","Arial Black",Impact,sans-serif;
+  --body:"Nunito",ui-rounded,"Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10142a; --panel:#1a2040; --ink:#eef1fb; --muted:#a3abc8; --line:#2c3460;
+  --go:#ff6a4d; --lane:#4c9bff; --sun:#ffcf4a; --grass:#34c985;
+  --spd:#ff6a4d; --acc:#34c985; --wgt:#9a82ff; --hdl:#4c9bff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10142a; --panel:#1a2040; --ink:#eef1fb; --muted:#a3abc8; --line:#2c3460;
+  --go:#ff6a4d; --lane:#4c9bff; --sun:#ffcf4a; --grass:#34c985;
+  --spd:#ff6a4d; --acc:#34c985; --wgt:#9a82ff; --hdl:#4c9bff; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+.wrap{max-width:1080px;margin:0 auto}
+.flag{height:18px;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+  background:repeating-conic-gradient(var(--ink) 0 25%,var(--bg) 0 50%) 0 0/18px 18px}
+header{padding-block:28px 18px;display:grid;gap:6px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,6vw,52px);line-height:1.05;margin:0;text-wrap:balance}
+h1 span{color:var(--go)}
+.lede{margin:0;color:var(--muted);max-width:60ch;font-weight:600}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.q{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:10px}
+.qs{display:grid;gap:14px}
+.q h2{margin:0;font-size:17px;font-weight:900;display:flex;gap:10px;align-items:center}
+.q h2 b{font-family:var(--display);font-weight:400;background:var(--ink);color:var(--bg);border-radius:8px;
+  min-width:30px;height:30px;display:grid;place-items:center;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-weight:800;font-size:15px;border:2px solid var(--line);background:transparent;color:var(--ink);
+  border-radius:999px;padding:8px 14px;cursor:pointer;transition:transform .12s,background .12s}
+.chip:hover{transform:translateY(-1px);border-color:var(--lane)}
+.chip[aria-pressed="true"]{background:var(--lane);border-color:var(--lane);color:#fff}
+.chip:focus-visible,.pick:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.hint{margin:0;font-size:13.5px;color:var(--muted)}
+
+.podium{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:grid;gap:14px}
+.win{background:var(--go);color:var(--go-ink);border-radius:22px;padding:20px;display:grid;gap:12px;position:relative;overflow:hidden}
+.win::after{content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;opacity:.18;
+  background:repeating-conic-gradient(#fff 0 25%,transparent 0 50%) 0 0/28px 28px;transform:rotate(12deg)}
+.tag{font-family:var(--display);font-size:13px;letter-spacing:.06em;margin:0}
+.names{font-family:var(--display);font-size:clamp(22px,4vw,32px);line-height:1.15;margin:0;text-wrap:balance}
+.why{margin:0;font-weight:700;max-width:60ch}
+.win .bars{background:rgba(255,255,255,.14);border-radius:14px;padding:12px}
+.bars{display:grid;gap:7px}
+.bar{display:grid;grid-template-columns:110px 1fr 34px;gap:10px;align-items:center;font-weight:800;font-size:14px}
+.track{height:12px;border-radius:999px;background:rgba(127,127,127,.22);overflow:hidden}
+.fill{height:100%;border-radius:999px;transition:width .35s ease}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+.win .fill{background:#fff}
+.kart{background:var(--sun);color:#1c1606;border-radius:14px;padding:10px 12px;font-weight:800;font-size:14.5px;position:relative;z-index:1}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:10px}
+.card h3{margin:0;font-size:16px;font-weight:900}
+.rank{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.rank li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;font-weight:700;font-size:14.5px}
+.rank .pos{font-family:var(--display);color:var(--muted);text-align:center}
+.rank .who{min-width:0}
+.rank .pts{font-variant-numeric:tabular-nums;font-weight:900;color:var(--lane)}
+.mini{height:6px;border-radius:999px;background:var(--line);margin-top:3px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--lane);border-radius:999px}
+
+.fav{margin-top:26px}
+.fav h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 4px}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pick{font:inherit;font-weight:700;font-size:14px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:10px;padding:6px 10px;cursor:pointer}
+.pick[aria-pressed="true"]{border-color:var(--go);background:var(--go);color:var(--go-ink)}
+.favout{margin-top:14px}
+.crew{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none;position:relative;z-index:1}
+.crew .chipname{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;
+  background:rgba(255,255,255,.18);color:inherit;text-decoration:none;font-weight:800;font-size:15px}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-family:var(--display);font-size:12px;color:#fff;border:2px solid rgba(255,255,255,.85)}
+.av.Plume{background:var(--grass)} .av.Léger{background:var(--lane)} .av.Moyen{background:var(--wgt)}
+.av.Lourd{background:#c2410c} .av[class~="Très"]{background:var(--ink);color:var(--bg)}
+.kartrow{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center}
+.kartrow svg{width:96px;height:auto;display:block}
+.kartrow a{color:inherit;font-weight:900}
+.favhead{display:flex;align-items:center;gap:12px}
+.favhead .av{width:44px;height:44px;font-size:15px}
+.see{font-weight:800;color:var(--lane)}
+.push{margin:0;font-size:13.5px;color:var(--muted);font-weight:600}
+.push b{font-weight:900;margin-right:4px}
+.l{color:var(--grass)} .m{color:var(--lane)} .h{color:var(--go)}
+.gtrack{position:relative;height:34px;margin:6px 12px 0;border-radius:999px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--grass) 30%,transparent),color-mix(in srgb,var(--lane) 25%,transparent),color-mix(in srgb,var(--go) 30%,transparent))}
+.dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--ink);transform:translate(-50%,-50%)}
+.dot.on{width:20px;height:20px;background:var(--go);border-color:var(--go)}
+.marker{position:absolute;top:-10px;transform:translateX(-50%);width:0;height:0;
+  border-left:9px solid transparent;border-right:9px solid transparent;border-top:12px solid var(--ink);transition:left .35s ease}
+.glabels{display:flex;justify-content:space-between;font-weight:800;font-size:13px;color:var(--muted);margin:4px 4px 0}
+.when{margin-top:26px}
+.when h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 10px;text-wrap:balance}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:700px){.cols{grid-template-columns:1fr}}
+.col{background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:14px}
+.col h3{margin:0 0 4px;font-family:var(--display);font-weight:400;font-size:17px}
+.col p{margin:0;font-size:14.5px}
+.legend{font-size:13px;color:var(--muted);margin:22px 0 0;max-width:75ch}
+.legend p{margin:0 0 6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>body{margin:0}*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="flag" aria-hidden="true"></div>
+  <header>
+    <h1>Le choix du <span>pilote</span></h1>
+    <p class="lede">Réponds aux 4 questions : l'app calcule quel pilote de Mario Kart World (Switch 2) te donnera les meilleurs résultats, et quel véhicule lui va bien.</p>
+  </header>
+
+  <div class="grid">
+    <div class="qs" id="qs"></div>
+
+    <aside class="podium" aria-live="polite">
+      <div class="win">
+        <p class="tag">Ton meilleur choix</p>
+        <ul class="crew" id="winNames"></ul>
+        <p class="why" id="winWhy"></p>
+        <div class="bars" id="winBars"></div>
+        <div class="kart" id="winKart"></div>
+      </div>
+      <div class="card">
+        <h3>Où se trouve ton pilote idéal ?</h3>
+        <p class="hint">Le triangle montre où tes réponses t'amènent. Chaque point est une famille de pilotes.</p>
+        <div id="gauge"></div>
+      </div>
+      <div class="card">
+        <h3>Les familles les plus proches de ton pilote idéal</h3>
+        <ol class="rank" id="rank"></ol>
+      </div>
+    </aside>
+  </div>
+
+  <section class="when">
+    <h2>Léger, équilibré ou lourd : quand choisir quoi ?</h2>
+    <div class="cols">
+      <div class="col"><h3 class="l">Léger</h3><p>Pour débuter, pour les courses pleines d'objets et les circuits avec beaucoup de virages. Démarre vite et repart vite après une carapace, mais se fait bousculer.</p></div>
+      <div class="col"><h3 class="m">Équilibré</h3><p>Quand tu joues sur tous les types de circuits, quand tu ne sais pas encore ce qui te convient, ou quand tu veux de la vitesse <em>et</em> de l'agilité. Il n'est le meilleur nulle part, mais il n'est jamais mauvais. Idéal pour un Grand Prix complet.</p></div>
+      <div class="col"><h3 class="h">Lourd</h3><p>Pour le contre-la-montre, les longues lignes droites et ceux qui aiment bousculer. Très rapide une fois lancé, mais lent à redémarrer et moins précis dans les virages.</p></div>
+    </div>
+  </section>
+
+  <section class="fav">
+    <h2>Et ton pilote préféré ?</h2>
+    <p class="hint">Touche un nom pour voir ses points forts et où il se classe avec tes réponses.</p>
+    <div class="picks" id="picks"></div>
+    <div class="card favout" id="favOut" hidden></div>
+  </section>
+
+  <div class="legend">
+    <p><strong>Bon à savoir :</strong> les costumes ne changent rien aux statistiques. Mario aviateur ou Mario cow-boy, c'est pareil. Plusieurs pilotes ont exactement les mêmes chiffres : dans une même famille, prends celui que tu préfères.</p>
+    <p>Les chiffres viennent de joueurs qui les ont mesurés avec le Kart Standard (échelle de 0 à 4, le jeu ne les affiche pas). Ils peuvent changer avec les mises à jour, et le jeu a aussi des petits bonus cachés selon le type de route.</p>
+  </div>
+</div>
+
+<script>
+const STATS=[["spd","Vitesse"],["acc","Accélération"],["wgt","Poids"],["hdl","Maniabilité"]];
+
+const FAMILIES=[
+  {id:"bebe",label:"Les bébés",cls:"Plume",s:{spd:1.4,acc:3.0,wgt:1.0,hdl:2.6},
+   who:["Bébé Mario","Bébé Luigi","Bébé Peach","Bébé Daisy","Bébé Harmonie"]},
+  {id:"plume",label:"Les petits plume",cls:"Plume",s:{spd:1.4,acc:2.8,wgt:1.2,hdl:2.6},
+   who:["Skelerex","Goomba","Peepa","Fish Bone"]},
+  {id:"leger",label:"Les légers",cls:"Léger",s:{spd:1.4,acc:2.6,wgt:1.4,hdl:2.4},
+   who:["Toad","Toadette","Koopa","Lakitu","Maskass","Nabbit"]},
+  {id:"stingby",label:"Le léger rapide",cls:"Léger",s:{spd:1.6,acc:2.6,wgt:1.4,hdl:2.4},
+   who:["Stingby"]},
+  {id:"moyen1",label:"Les moyens agiles",cls:"Moyen",s:{spd:1.8,acc:2.4,wgt:1.6,hdl:2.2},
+   who:["Peach","Daisy","Yoshi","Bowser Jr."]},
+  {id:"moyen2",label:"Les moyens équilibrés",cls:"Moyen",s:{spd:2.0,acc:2.2,wgt:1.8,hdl:2.0},
+   who:["Mario","Luigi","Birdo","Pauline","Frère Marto"]},
+  {id:"lourd1",label:"Les lourds élégants",cls:"Lourd",s:{spd:2.2,acc:2.0,wgt:2.0,hdl:1.8},
+   who:["Harmonie","Roi Boo"]},
+  {id:"lourd2",label:"Les costauds",cls:"Lourd",s:{spd:2.4,acc:1.8,wgt:2.2,hdl:1.6},
+   who:["Donkey Kong","Wario","Waluigi","Wiggler","Vache"]},
+  {id:"geant",label:"Le géant",cls:"Très lourd",s:{spd:2.6,acc:1.6,wgt:2.4,hdl:1.4},
+   who:["Bowser"]}
+];
+
+const KART={
+  "Plume":"Véhicule conseillé : Baby Blooper. C'est le choix le plus utilisé en ligne avec les pilotes légers, bon départ et facile à tourner.",
+  "Léger":"Véhicule conseillé : Baby Blooper, équilibré et facile à manier.",
+  "Moyen":"Véhicule conseillé : B Dasher pour plus de vitesse, ou Baby Blooper si tu veux plus de maniabilité.",
+  "Lourd":"Véhicule conseillé : Baby Blooper. Il compense le départ lent des lourds, c'est un combo très fort sur route.",
+  "Très lourd":"Véhicule conseillé : Baby Blooper, pour gagner l'accélération qui manque à Bowser."
+};
+
+const SLUG={"Bébé Mario":"baby-mario","Bébé Luigi":"baby-luigi","Bébé Peach":"baby-peach","Bébé Daisy":"baby-daisy",
+  "Bébé Harmonie":"baby-rosalina","Skelerex":"dry-bones","Goomba":"goomba","Peepa":"peepa","Fish Bone":"fish-bone",
+  "Toad":"toad","Toadette":"toadette","Koopa":"koopa-troopa","Lakitu":"lakitu","Maskass":"shy-guy","Nabbit":"nabbit",
+  "Stingby":"stingby","Peach":"peach","Daisy":"daisy","Yoshi":"yoshi","Bowser Jr.":"bowser-jr","Mario":"mario",
+  "Luigi":"luigi","Birdo":"birdo","Pauline":"pauline","Frère Marto":"hammer-bro","Harmonie":"rosalina","Roi Boo":"king-boo",
+  "Donkey Kong":"donkey-kong","Wario":"wario","Waluigi":"waluigi","Wiggler":"wiggler","Vache":"cow","Bowser":"bowser"};
+const WIKI="https://www.dexerto.com/wikis/mario-kart-world/";
+const KARTS_URL=WIKI+"karts/";
+const link=n=>WIKI+SLUG[n]+"/";
+const initials=n=>n.replace("Bébé ","B").replace(/[^A-Za-zÀ-ÿ ]/g,"").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+const av=(n,cls)=>`<span class="av ${cls}" aria-hidden="true">${initials(n)}</span>`;
+const SIZE={"Plume":.78,"Léger":.86,"Moyen":.94,"Lourd":1.0,"Très lourd":1.0};
+function kartSvg(cls,color){
+  const s=SIZE[cls], w=Math.round(80*s), x=(96-w)/2, wr=cls==="Très lourd"?11:9;
+  return `<svg viewBox="0 0 96 56" role="img" aria-label="Kart dessiné, catégorie ${cls}">
+    <rect x="${x}" y="22" width="${w}" height="14" rx="7" fill="${color}"/>
+    <rect x="${x+w*.35}" y="12" width="${w*.22}" height="12" rx="4" fill="#1c1606" opacity=".75"/>
+    <line x1="${x+w*.62}" y1="22" x2="${x+w*.72}" y2="13" stroke="#1c1606" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="${x+w*.18}" cy="40" r="${wr}" fill="#1c1606"/><circle cx="${x+w*.18}" cy="40" r="${wr*.4}" fill="#fff"/>
+    <circle cx="${x+w*.82}" cy="40" r="${wr}" fill="#1c1606"/><circle cx="${x+w*.82}" cy="40" r="${wr*.4}" fill="#fff"/>
+  </svg>`;
+}
+const KART_NAME={"Plume":"Baby Blooper","Léger":"Baby Blooper","Moyen":"B Dasher","Lourd":"Baby Blooper","Très lourd":"Baby Blooper"};
+function kartBlock(cls){
+  return `<div class="kartrow">${kartSvg(cls,"#ff4f2e")}<div>${KART[cls]}</div></div>`;
+}
+
+/* Chaque réponse pousse le "pilote idéal" vers le léger (nombre négatif) ou le lourd (positif).
+   Position d'une famille : 0 = Mario (équilibré), -3.5 = bébés, +3 = Bowser. */
+const QUESTIONS=[
+  {id:"niveau",title:"Tu joues comment ?",
+   opts:[
+    ["deb","Je débute",-1.5,"Un pilote léger démarre vite et tourne facilement : moins de risques."],
+    ["moy","Je me débrouille",0,"Pas de préférence : tout reste ouvert."],
+    ["exp","Je suis fort",1,"Un bon pilote garde sa vitesse : un peu plus de poids et de vitesse aide."]]},
+  {id:"mode",title:"Dans quel mode ?",
+   opts:[
+    ["gp","Grand Prix",0,"Des pistes de tous les styles : rien ne domine."],
+    ["ko","Survie (Knockout Tour)",-1,"Beaucoup de chocs : il faut repartir vite après chaque objet."],
+    ["amis","Contre la famille ou en ligne",-0.5,"Pas mal de bagarre : l'accélération compte un peu plus."],
+    ["clm","Contre-la-montre",2,"Pas d'objets : la vitesse de pointe compte le plus."]]},
+  {id:"style",title:"Ton style de pilotage ?",
+   opts:[
+    ["droit","Je fonce tout droit",1.5,"Tu aimes la vitesse : un pilote plus lourd va plus vite."],
+    ["mix","Un peu de tout",0,"Tu fais de tout : un pilote équilibré n'a pas de point faible."],
+    ["virage","J'adore les virages",-1.5,"Les légers tournent plus serré et dérapent facilement."],
+    ["bagarre","Je pousse les autres",2,"Plus tu es lourd, plus tu bouscules sans être bousculé."]]},
+  {id:"souci",title:"Qu'est-ce qui te fait perdre le plus ?",
+   opts:[
+    ["objets","Les carapaces et les bananes",-1.5,"Après un choc, un léger retrouve sa vitesse bien plus vite."],
+    ["sortie","Je rate les virages",-1,"Plus de maniabilité pour rester sur la piste."],
+    ["double","On me double en ligne droite",1.5,"Plus de vitesse de pointe pour ne plus te faire rattraper."],
+    ["pousse","On me pousse hors de la piste",1.5,"Plus de poids pour tenir ta trajectoire."],
+    ["rien","Un peu de tout",0,"Pas de gros point faible : on reste au milieu."]]}
+];
+
+const POS=f=>((f.s.spd-2.0)+(f.s.wgt-1.8)-(f.s.acc-2.2)-(f.s.hdl-2.0))/0.8;
+const MIN=-3.5, MAX=3;
+const ans={niveau:"moy",mode:"gp",style:"mix",souci:"rien"};
+let fav=null;
+
+const qs=document.getElementById("qs");
+QUESTIONS.forEach((q,i)=>{
+  const box=document.createElement("div");box.className="q";
+  box.innerHTML=`<h2><b>${i+1}</b>${q.title}</h2><div class="chips" role="group" aria-label="${q.title}"></div><p class="push" id="push-${q.id}"></p>`;
+  const chips=box.querySelector(".chips");
+  q.opts.forEach(([k,lab])=>{
+    const b=document.createElement("button");b.type="button";b.className="chip";b.id=`q-${q.id}-${k}`;
+    b.textContent=lab;b.dataset.q=q.id;b.dataset.k=k;
+    b.addEventListener("click",()=>{ans[q.id]=k;render()});
+    chips.appendChild(b);
+  });
+  qs.appendChild(box);
+});
+
+const picks=document.getElementById("picks");
+FAMILIES.flatMap(f=>f.who.map(n=>[n,f])).sort((a,b)=>a[0].localeCompare(b[0],"fr")).forEach(([n,f])=>{
+  const b=document.createElement("button");b.type="button";b.className="pick";b.textContent=n;b.dataset.n=n;
+  b.id="p-"+n.replace(/[^a-z0-9]/gi,"-");
+  b.addEventListener("click",()=>{fav=fav===n?null:n;render()});
+  picks.appendChild(b);
+});
+
+function target(){
+  const sum=QUESTIONS.reduce((t,q)=>t+q.opts.find(o=>o[0]===ans[q.id])[2],0);
+  return Math.max(MIN,Math.min(MAX,sum/1.3));
+}
+function score(f,t){return Math.max(0,Math.round(100-22*Math.abs(POS(f)-t)))}
+function idealStats(t){
+  const d=t*0.2;
+  return {spd:2.0+d,acc:2.2-d,wgt:1.8+d,hdl:2.0-d};
+}
+const pctPos=v=>((v-MIN)/(MAX-MIN))*100;
+function gauge(t,top){
+  const dots=FAMILIES.map(f=>`<span class="dot${f===top?" on":""}" style="left:${pctPos(POS(f))}%" title="${f.label}"></span>`).join("");
+  return `<div class="gtrack">${dots}<span class="marker" style="left:${pctPos(t)}%"></span></div>
+    <div class="glabels"><span>Léger</span><span>Équilibré</span><span>Lourd</span></div>`;
+}
+
+function bars(s,showColor){
+  return STATS.map(([k,lab])=>`<div class="bar"><span>${lab}</span><div class="track"><div class="fill" style="width:${s[k]/4*100}%;${showColor?`background:var(--${k})`:""}"></div></div><span class="num">${s[k].toFixed(1)}</span></div>`).join("");
+}
+
+function reason(t){
+  if(t<=-2.25) return "Tes réponses vont toutes dans le même sens : tu as besoin de démarrer vite, de tourner serré et de repartir vite après un choc. Un pilote léger est fait pour ça.";
+  if(t<-0.6) return "Tu penches vers le léger, sans aller jusqu'au bout : un pilote agile garde une bonne accélération tout en allant un peu plus vite.";
+  if(t<=0.6) return "Tes réponses se compensent : certaines demandent de la vitesse, d'autres de l'agilité. Un pilote équilibré fait tout correctement, sans gros point faible.";
+  if(t<2.25) return "Tu penches vers le lourd : plus de vitesse et de poids, mais sans perdre trop de maniabilité.";
+  return "Tes réponses vont toutes vers la vitesse et la puissance : un pilote lourd va le plus vite en ligne droite et se fait peu bousculer.";
+}
+
+function render(){
+  document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",ans[b.dataset.q]===b.dataset.k));
+  document.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b.dataset.n===fav));
+  QUESTIONS.forEach(q=>{
+    const o=q.opts.find(o=>o[0]===ans[q.id]);
+    const dir=o[2]<0?`<b class="l">◀ plus léger</b>`:o[2]>0?`<b class="h">plus lourd ▶</b>`:`<b class="m">● neutre</b>`;
+    document.getElementById("push-"+q.id).innerHTML=`${dir} ${o[3]}`;
+  });
+  const t=target();
+  const ranked=FAMILIES.map(f=>({f,sc:score(f,t)})).sort((a,b)=>b.sc-a.sc);
+  const pct=sc=>sc;
+  const top=ranked[0].f;
+  document.getElementById("gauge").innerHTML=gauge(t,top);
+  document.getElementById("winNames").innerHTML=top.who.map(n=>`<li><span class="chipname">${av(n,top.cls)}${n}</span></li>`).join("");
+  document.getElementById("winWhy").textContent=reason(t);
+  document.getElementById("winBars").innerHTML=bars(top.s,false);
+  document.getElementById("winKart").innerHTML=kartBlock(top.cls);
+  document.getElementById("rank").innerHTML=ranked.map((r,i)=>`<li><span class="pos">${i+1}</span><span class="who">${r.f.who.join(", ")}<div class="mini"><i style="width:${pct(r.sc)}%"></i></div></span><span class="pts">${pct(r.sc)}</span></li>`).join("");
+  const out=document.getElementById("favOut");
+  if(fav){
+    const f=FAMILIES.find(f=>f.who.includes(fav));
+    const pos=ranked.findIndex(r=>r.f===f)+1;
+    const msg=pos===1?"C'est justement le meilleur choix pour toi !":pos<=3?`Très bon choix : ${pos}e sur ${ranked.length} familles. Fonce !`:`${pos}e sur ${ranked.length} avec tes réponses. Tu peux quand même gagner avec, surtout avec le bon véhicule.`;
+    out.hidden=false;
+    out.innerHTML=`<div class="favhead">${av(fav,f.cls)}<div><h3>${fav} <span style="color:var(--muted);font-weight:700">· ${f.cls}</span></h3></div></div><p class="hint" style="margin:0;font-weight:700;color:var(--ink)">${msg}</p><div class="bars">${bars(f.s,true)}</div><p class="hint">Mêmes statistiques : ${f.who.join(", ")}.</p>${kartBlock(f.cls)}`;
+  } else out.hidden=true;
+}
+render();
+</script>
+
+</body>
+</html>
